@@ -1,10 +1,11 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ProjectHeader from '@/components/ProjectHeader';
 import FileExplorer from '@/components/FileExplorer';
 import CodeEditor from '@/components/CodeEditor';
 import LivePreview from '@/components/LivePreview';
 import ChatPanel from '@/components/ChatPanel';
+import RoomSetup from '@/components/RoomSetup';
+import { useRoomStore } from '@/stores/roomStore';
 
 // Mock data
 const mockUsers = [
@@ -54,89 +55,6 @@ const mockFiles = [
   },
 ];
 
-const fileContents = {
-  html: `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Collaborative Coding</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Welcome to Vibe Coding!</h1>
-        <p>Start collaborating with your team in real-time.</p>
-        <button id="clickMe">Click me!</button>
-    </div>
-    <script src="script.js"></script>
-</body>
-</html>`,
-  css: `* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.container {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    text-align: center;
-    max-width: 500px;
-}
-
-h1 {
-    color: #333;
-    margin-bottom: 1rem;
-    font-size: 2.5rem;
-}
-
-p {
-    color: #666;
-    margin-bottom: 2rem;
-    font-size: 1.1rem;
-}
-
-button {
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 6px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-button:hover {
-    transform: translateY(-2px);
-}`,
-  js: `document.addEventListener('DOMContentLoaded', function() {
-    const button = document.getElementById('clickMe');
-    
-    button.addEventListener('click', function() {
-        button.textContent = 'Clicked!';
-        button.style.background = 'linear-gradient(45deg, #10B981, #059669)';
-        
-        setTimeout(() => {
-            button.textContent = 'Click me!';
-            button.style.background = 'linear-gradient(45deg, #667eea, #764ba2)';
-        }, 2000);
-    });
-});`,
-};
-
 const mockMessages = [
   {
     id: '1',
@@ -155,9 +73,33 @@ const mockMessages = [
 ];
 
 const Index = () => {
+  const { currentRoom, currentUser, participants, updateCode } = useRoomStore();
   const [selectedFile, setSelectedFile] = useState('html');
   const [messages, setMessages] = useState(mockMessages);
   const [showChat, setShowChat] = useState(true);
+  const [fileContents, setFileContents] = useState({
+    html: '',
+    css: '',
+    js: '',
+  });
+
+  // Update file contents when room changes
+  useEffect(() => {
+    if (currentRoom?.codeContent) {
+      // For MVP, we'll store HTML content and extract CSS/JS
+      const htmlContent = currentRoom.codeContent;
+      
+      // Simple extraction of CSS and JS from HTML
+      const cssMatch = htmlContent.match(/<style[^>]*>([\s\S]*?)<\/style>/);
+      const jsMatch = htmlContent.match(/<script[^>]*>([\s\S]*?)<\/script>/);
+      
+      setFileContents({
+        html: htmlContent,
+        css: cssMatch ? cssMatch[1] : '',
+        js: jsMatch ? jsMatch[1] : '',
+      });
+    }
+  }, [currentRoom?.codeContent]);
 
   const getCurrentFile = () => {
     const fileMap = {
@@ -170,23 +112,34 @@ const Index = () => {
 
   const handleCodeChange = (content: string) => {
     console.log('Code changed:', content);
-    // In a real app, this would sync with other users
+    
+    // Update local state
+    setFileContents(prev => ({
+      ...prev,
+      [selectedFile]: content
+    }));
+
+    // For HTML changes, update the room content
+    if (selectedFile === 'html') {
+      updateCode(content);
+    }
   };
 
   const handleSendMessage = (content: string) => {
     const newMessage = {
       id: Date.now().toString(),
-      user: 'You',
+      user: currentUser?.username || 'You',
       content,
       timestamp: new Date(),
-      color: '#8B5CF6',
+      color: currentUser?.color || '#8B5CF6',
     };
     setMessages([...messages, newMessage]);
   };
 
   const handleShare = () => {
-    console.log('Sharing project...');
-    // In a real app, this would generate a shareable link
+    if (currentRoom?.code) {
+      navigator.clipboard.writeText(`Join my Link coding session with code: ${currentRoom.code}`);
+    }
   };
 
   const handleSettings = () => {
@@ -199,14 +152,20 @@ const Index = () => {
 
   const handleCreateFile = (name: string, type: 'file' | 'folder') => {
     console.log('Creating:', type, name);
-    // In a real app, this would create a new file/folder
   };
+
+  const handleRoomJoined = () => {
+    // Room setup complete, show the main interface
+  };
+
+  // Show room setup if user hasn't joined a room yet
+  if (!currentRoom || !currentUser) {
+    return <RoomSetup onRoomJoined={handleRoomJoined} />;
+  }
 
   return (
     <div className="h-screen flex flex-col bg-slate-100">
       <ProjectHeader
-        projectName="My Awesome Project"
-        users={mockUsers}
         onShare={handleShare}
         onSettings={handleSettings}
       />
@@ -228,7 +187,12 @@ const Index = () => {
           <div className="flex-1">
             <CodeEditor
               file={getCurrentFile()}
-              users={mockUsers}
+              users={participants.map(p => ({
+                id: p.id,
+                name: p.username,
+                color: p.color,
+                cursor: p.cursorPosition
+              }))}
               onCodeChange={handleCodeChange}
             />
           </div>
@@ -248,7 +212,7 @@ const Index = () => {
           <div className="w-80 flex-shrink-0">
             <ChatPanel
               messages={messages}
-              currentUser="You"
+              currentUser={currentUser?.username || 'You'}
               onSendMessage={handleSendMessage}
             />
           </div>
