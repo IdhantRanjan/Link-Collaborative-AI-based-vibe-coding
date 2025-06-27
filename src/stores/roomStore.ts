@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -73,18 +74,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     const userColor = generateUserColor();
     const userId = Math.random().toString(36).substring(2, 15);
 
-    // Fetch the room from Supabase (replace with your actual Supabase fetch logic)
-    const { data: roomData, error: roomError } = await supabase
-      .from('rooms')
-      .select('*')
-      .eq('code', code)
-      .single();
-
-    if (roomError) {
-      console.error('Failed to fetch room:', roomError);
-      return false;
-    }
-
+    // For MVP, we'll simulate joining an existing room
     const existingRoom = {
       id: Math.random().toString(36).substring(2, 15),
       code: code,

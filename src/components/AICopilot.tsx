@@ -21,7 +21,7 @@ const AICopilot: React.FC<AICopilotProps> = ({ currentCode, language }) => {
     {
       id: '1',
       type: 'ai',
-      content: "Hi! I'm your AI coding assistant. I can help you debug code, explain concepts, or suggest improvements. What would you like to know?",
+      content: "Hi! I'm your AI coding assistant powered by Ollama. I can help you debug code, explain concepts, or suggest improvements. What would you like to know?",
       timestamp: new Date()
     }
   ]);
@@ -50,35 +50,24 @@ const AICopilot: React.FC<AICopilotProps> = ({ currentCode, language }) => {
     setIsLoading(true);
 
     try {
-      // Using a free AI service (you can replace with any free API)
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      // Using Ollama API (local installation)
+      const response = await fetch('http://localhost:11434/api/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY || 'demo-key'}`
         },
         body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [
-            {
-              role: 'system',
-              content: `You are a helpful coding assistant. The user is working with ${language} code. Current code context: ${currentCode.slice(0, 500)}...`
-            },
-            {
-              role: 'user',
-              content: messageToSend
-            }
-          ],
-          max_tokens: 500,
-          temperature: 0.7
+          model: 'codellama',
+          prompt: `You are a helpful coding assistant. The user is working with ${language} code. Current code context: ${currentCode.slice(0, 500)}...\n\nUser question: ${messageToSend}`,
+          stream: false
         })
       });
 
-      let aiResponse = "I'm a demo AI assistant. For full functionality, please add your OpenAI API key to the environment variables. I can still help with basic coding questions!";
+      let aiResponse = "I'm powered by Ollama! Make sure you have Ollama installed locally and the 'codellama' model downloaded. Run 'ollama pull codellama' to get started.";
       
       if (response.ok) {
         const data = await response.json();
-        aiResponse = data.choices[0].message.content;
+        aiResponse = data.response;
       }
 
       const aiMessage: ChatMessage = {
@@ -90,11 +79,11 @@ const AICopilot: React.FC<AICopilotProps> = ({ currentCode, language }) => {
 
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
-      console.error('AI API error:', error);
+      console.error('Ollama API error:', error);
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: "I'm currently in demo mode. To get AI-powered responses, please add your OpenAI API key to the environment variables.",
+        content: "I'm powered by Ollama running locally. Please make sure you have Ollama installed and running with 'ollama serve', then pull a model like 'ollama pull codellama'.",
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);

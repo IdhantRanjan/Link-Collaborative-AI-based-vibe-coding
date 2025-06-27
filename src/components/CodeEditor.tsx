@@ -1,6 +1,5 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Save, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface User {
@@ -35,25 +34,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ file, users, onCodeChange }) =>
     setCursorPosition({ line, column });
   };
 
-  const runCode = () => {
-    // Simulate code execution
-    console.log('Running code:', code);
-  };
-
-  const saveFile = () => {
-    console.log('Saving file:', file.name);
-  };
-
-  const downloadFile = () => {
-    const blob = new Blob([code], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = file.name;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   return (
     <div className="h-full flex flex-col bg-slate-900 text-white">
       {/* Editor Header */}
@@ -63,20 +43,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ file, users, onCodeChange }) =>
           <span className="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded">
             {file.language}
           </span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button size="sm" onClick={runCode} className="bg-green-600 hover:bg-green-700">
-            <Play className="w-4 h-4 mr-1" />
-            Run
-          </Button>
-          <Button size="sm" variant="outline" onClick={saveFile}>
-            <Save className="w-4 h-4 mr-1" />
-            Save
-          </Button>
-          <Button size="sm" variant="outline" onClick={downloadFile}>
-            <Download className="w-4 h-4 mr-1" />
-            Download
-          </Button>
         </div>
       </div>
 

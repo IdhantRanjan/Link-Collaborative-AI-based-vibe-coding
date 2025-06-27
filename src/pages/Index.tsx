@@ -7,6 +7,7 @@ import LivePreview from '@/components/LivePreview';
 import ChatPanel from '@/components/ChatPanel';
 import RoomSetup from '@/components/RoomSetup';
 import AICopilot from '@/components/AICopilot';
+import ActionButtons from '@/components/ActionButtons';
 import { useRoomStore } from '@/stores/roomStore';
 
 // Mock data
@@ -174,13 +175,22 @@ const Index = () => {
       />
       
       <div className="flex-1 flex overflow-hidden">
-        {/* File Explorer */}
-        <div className="w-64 flex-shrink-0 bg-slate-800/50 backdrop-blur border-r border-slate-700">
-          <FileExplorer
-            files={mockFiles}
-            selectedFile={selectedFile}
-            onFileSelect={handleFileSelect}
-            onCreateFile={handleCreateFile}
+        {/* File Explorer with Action Buttons */}
+        <div className="w-64 flex-shrink-0 bg-slate-800/50 backdrop-blur border-r border-slate-700 flex flex-col">
+          <div className="flex-1">
+            <FileExplorer
+              files={mockFiles}
+              selectedFile={selectedFile}
+              onFileSelect={handleFileSelect}
+              onCreateFile={handleCreateFile}
+            />
+          </div>
+          <ActionButtons
+            fileName={getCurrentFile().name}
+            fileContent={getCurrentFile().content}
+            onRun={() => console.log('Run code')}
+            onSave={() => console.log('Save file')}
+            onRefresh={() => console.log('Refresh preview')}
           />
         </div>
 
