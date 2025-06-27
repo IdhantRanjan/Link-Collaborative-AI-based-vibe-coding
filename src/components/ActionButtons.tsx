@@ -52,34 +52,31 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
         <Button 
           size="sm" 
           onClick={handleRun} 
-          className="bg-green-600 hover:bg-green-700 text-xs"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs border-0"
         >
           <Play className="w-3 h-3 mr-1" />
           Run
         </Button>
         <Button 
           size="sm" 
-          variant="outline" 
           onClick={handleRefresh}
-          className="text-xs border-slate-600 text-slate-300 hover:text-white hover:bg-slate-700"
+          className="bg-blue-600 hover:bg-blue-700 text-white text-xs border-0"
         >
           <RefreshCw className="w-3 h-3 mr-1" />
           Refresh
         </Button>
         <Button 
           size="sm" 
-          variant="outline" 
           onClick={handleSave}
-          className="text-xs border-slate-600 text-slate-300 hover:text-white hover:bg-slate-700"
+          className="bg-purple-600 hover:bg-purple-700 text-white text-xs border-0"
         >
           <Save className="w-3 h-3 mr-1" />
           Save
         </Button>
         <Button 
           size="sm" 
-          variant="outline" 
           onClick={handleDownload}
-          className="text-xs border-slate-600 text-slate-300 hover:text-white hover:bg-slate-700"
+          className="bg-orange-600 hover:bg-orange-700 text-white text-xs border-0"
         >
           <Download className="w-3 h-3 mr-1" />
           Download
