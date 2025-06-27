@@ -1,73 +1,160 @@
-# Welcome to your Lovable project
+# Link - Collaborative AI-Based Vibe Coding Platform
 
-## Project info
+🚀 **Link** is a modern, real-time collaborative coding platform that brings developers together to code, create, and innovate in a shared environment.
 
-**URL**: https://lovable.dev/projects/536c573b-b68b-4a87-af3b-8551f15bd370
+## ✨ Features
 
-## How can I edit this code?
+- 🔄 **Real-time Collaboration** - Code together with multiple developers simultaneously
+- 🎨 **Beautiful UI** - Modern, clean interface built with shadcn/ui components
+- 💻 **Live Code Editing** - Powered by Monaco Editor with syntax highlighting
+- 🌐 **Instant Preview** - See your changes live as you code
+- 📱 **Responsive Design** - Works seamlessly across all devices
+- 🎯 **Simple Room Sharing** - Create and join coding sessions with ease
 
-There are several ways of editing your application.
+## 🛠️ Tech Stack
 
-**Use Lovable**
+- **Frontend Framework**: React 18+ with TypeScript
+- **Build Tool**: Vite for lightning-fast development
+- **Styling**: Tailwind CSS + shadcn/ui components
+- **Code Editor**: Monaco Editor integration
+- **Development Platform**: Built with Lovable AI
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/536c573b-b68b-4a87-af3b-8551f15bd370) and start prompting.
+## 🚀 Quick Start
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prerequisites
 
-**Use your preferred IDE**
+- Node.js (v18 or higher)
+- npm or yarn package manager
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Installation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/IdhantRanjan/Link-Collaborative-AI-based-vibe-coding.git
+   cd Link-Collaborative-AI-based-vibe-coding
+   ```
 
-Follow these steps:
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+3. **Start the development server**
+   ```bash
+   npm run dev
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+4. **Open your browser**
+   Navigate to `http://localhost:5173` to see Link in action!
 
-# Step 3: Install the necessary dependencies.
-npm i
+## 🎯 Development Workflow
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### Using Lovable (Recommended)
+- Visit the [Lovable Project](link-colab.lovable.app)
+- Make changes through AI prompts
+- Changes are automatically committed to this repository
+
+### Using Your IDE
+- Clone this repo and work locally
+- Push changes to sync with Lovable
+- Hot reload enabled for instant feedback
+
+### Using GitHub Codespaces
+- Click the "Code" button → "Codespaces" → "New codespace"
+- Edit directly in the browser
+- Commit and push when ready
+
+## 📁 Project Structure
+
+```
+Link/
+├── src/
+│   ├── components/     # Reusable UI components
+│   ├── pages/         # Application pages/routes
+│   ├── hooks/         # Custom React hooks
+│   ├── utils/         # Helper functions
+│   ├── types/         # TypeScript type definitions
+│   └── styles/        # Global styles and Tailwind config
+├── public/            # Static assets
+├── package.json       # Dependencies and scripts
+└── vite.config.ts     # Vite configuration
 ```
 
-**Edit a file directly in GitHub**
+## 🌟 Key Features in Development
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- [ ] Real-time collaborative editing
+- [ ] Room creation and joining system
+- [ ] Live HTML/CSS/JavaScript preview
+- [ ] Multi-user cursor tracking
+- [ ] Language syntax highlighting
+- [ ] Mobile-responsive design
+- [ ] User presence indicators
 
-**Use GitHub Codespaces**
+## 🚀 Deployment
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+This project can be easily deployed using Lovable's built-in deployment:
 
-## What technologies are used for this project?
+1. Open [Lovable Project](link-colab.lovable.app)
+2. Click **Share** → **Publish**
+3. Your app will be live instantly!
 
-This project is built with:
+### Custom Domain Setup
+- Navigate to Project → Settings → Domains
+- Click "Connect Domain"
+- Follow the [custom domain guide](link-colab.lovable.app)
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🤝 Contributing
 
-## How can I deploy this project?
+We welcome contributions! Here's how you can help:
 
-Simply open [Lovable](https://lovable.dev/projects/536c573b-b68b-4a87-af3b-8551f15bd370) and click on Share -> Publish.
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
 
-## Can I connect a custom domain to my Lovable project?
+## 📝 Available Scripts
 
-Yes, you can!
+```bash
+# Start development server
+npm run dev
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+# Build for production
+npm run build
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+# Preview production build
+npm run preview
+
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+```
+
+## 🐛 Issues & Support
+
+Found a bug or have a feature request? 
+
+- 🐛 [Report bugs](https://github.com/IdhantRanjan/Link-Collaborative-AI-based-vibe-coding/issues)
+- 💡 [Request features](https://github.com/IdhantRanjan/Link-Collaborative-AI-based-vibe-coding/issues)
+- 💬 [Start discussions](https://github.com/IdhantRanjan/Link-Collaborative-AI-based-vibe-coding/discussions)
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with ❤️ using [Lovable](https://lovable.dev)
+- UI components from [shadcn/ui](https://ui.shadcn.com)
+- Code editing powered by [Monaco Editor](https://microsoft.github.io/monaco-editor)
+
+---
+
+**Link** - Where developers connect, collaborate, and create together. 🚀
+
+[![Built with Lovable](https://img.shields.io/badge/Built%20with-Lovable-ff69b4)](https://lovable.dev)
+[![Made with TypeScript](https://img.shields.io/badge/Made%20with-TypeScript-blue)](https://typescriptlang.org)
+[![Powered by React](https://img.shields.io/badge/Powered%20by-React-61dafb)](https://reactjs.org)
