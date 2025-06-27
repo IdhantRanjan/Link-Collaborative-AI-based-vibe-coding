@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import ProjectHeader from '@/components/ProjectHeader';
 import FileExplorer from '@/components/FileExplorer';
@@ -5,6 +6,7 @@ import CodeEditor from '@/components/CodeEditor';
 import LivePreview from '@/components/LivePreview';
 import ChatPanel from '@/components/ChatPanel';
 import RoomSetup from '@/components/RoomSetup';
+import AICopilot from '@/components/AICopilot';
 import { useRoomStore } from '@/stores/roomStore';
 
 // Mock data
@@ -77,6 +79,7 @@ const Index = () => {
   const [selectedFile, setSelectedFile] = useState('html');
   const [messages, setMessages] = useState(mockMessages);
   const [showChat, setShowChat] = useState(true);
+  const [showCopilot, setShowCopilot] = useState(false);
   const [fileContents, setFileContents] = useState({
     html: '',
     css: '',
@@ -164,7 +167,7 @@ const Index = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-slate-100">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <ProjectHeader
         onShare={handleShare}
         onSettings={handleSettings}
@@ -172,7 +175,7 @@ const Index = () => {
       
       <div className="flex-1 flex overflow-hidden">
         {/* File Explorer */}
-        <div className="w-64 flex-shrink-0">
+        <div className="w-64 flex-shrink-0 bg-slate-800/50 backdrop-blur border-r border-slate-700">
           <FileExplorer
             files={mockFiles}
             selectedFile={selectedFile}
@@ -182,9 +185,9 @@ const Index = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex">
+        <div className="flex-1 flex min-w-0">
           {/* Code Editor */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <CodeEditor
               file={getCurrentFile()}
               users={participants.map(p => ({
@@ -198,7 +201,7 @@ const Index = () => {
           </div>
 
           {/* Live Preview */}
-          <div className="w-96 flex-shrink-0 border-l border-slate-300">
+          <div className="w-96 flex-shrink-0 border-l border-slate-700">
             <LivePreview
               htmlContent={fileContents.html}
               cssContent={fileContents.css}
@@ -207,16 +210,49 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Chat Panel */}
-        {showChat && (
-          <div className="w-80 flex-shrink-0">
-            <ChatPanel
-              messages={messages}
-              currentUser={currentUser?.username || 'You'}
-              onSendMessage={handleSendMessage}
-            />
+        {/* Right Panel - Chat and AI Copilot */}
+        <div className="w-80 flex-shrink-0 flex flex-col">
+          {/* Panel Toggle Buttons */}
+          <div className="flex bg-slate-800/50 backdrop-blur border-l border-slate-700">
+            <button
+              onClick={() => { setShowChat(true); setShowCopilot(false); }}
+              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
+                showChat && !showCopilot 
+                  ? 'bg-blue-600 text-white' 
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700'
+              }`}
+            >
+              Chat
+            </button>
+            <button
+              onClick={() => { setShowCopilot(true); setShowChat(false); }}
+              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
+                showCopilot && !showChat 
+                  ? 'bg-purple-600 text-white' 
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700'
+              }`}
+            >
+              AI Copilot
+            </button>
           </div>
-        )}
+
+          {/* Panel Content */}
+          <div className="flex-1 min-h-0">
+            {showChat && (
+              <ChatPanel
+                messages={messages}
+                currentUser={currentUser?.username || 'You'}
+                onSendMessage={handleSendMessage}
+              />
+            )}
+            {showCopilot && (
+              <AICopilot
+                currentCode={getCurrentFile().content}
+                language={getCurrentFile().language}
+              />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

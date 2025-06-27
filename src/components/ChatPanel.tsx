@@ -36,18 +36,18 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ messages, currentUser, onSendMess
   };
 
   return (
-    <div className="h-full flex flex-col bg-slate-50 border-l border-slate-200">
+    <div className="h-full flex flex-col bg-slate-800/30 backdrop-blur border-l border-slate-700">
       {/* Chat Header */}
-      <div className="flex items-center p-3 border-b border-slate-200 bg-white">
-        <MessageCircle className="w-5 h-5 text-blue-600 mr-2" />
-        <h3 className="text-sm font-medium text-slate-800">Team Chat</h3>
+      <div className="flex items-center p-3 border-b border-slate-700 bg-slate-800/50">
+        <MessageCircle className="w-5 h-5 text-blue-400 mr-2" />
+        <h3 className="text-sm font-medium text-white">Team Chat</h3>
       </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
         {messages.length === 0 ? (
-          <div className="text-center text-slate-500 text-sm mt-8">
-            <MessageCircle className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+          <div className="text-center text-slate-400 text-sm mt-8">
+            <MessageCircle className="w-8 h-8 mx-auto mb-2 text-slate-500" />
             No messages yet. Start the conversation!
           </div>
         ) : (
@@ -61,14 +61,14 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ messages, currentUser, onSendMess
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-2 mb-1">
-                  <span className="text-sm font-medium text-slate-800">
+                  <span className="text-sm font-medium text-white">
                     {message.user}
                   </span>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-slate-400">
                     {message.timestamp.toLocaleTimeString()}
                   </span>
                 </div>
-                <p className="text-sm text-slate-700 break-words">
+                <p className="text-sm text-slate-300 break-words">
                   {message.content}
                 </p>
               </div>
@@ -78,14 +78,14 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ messages, currentUser, onSendMess
       </div>
 
       {/* Message Input */}
-      <div className="p-3 border-t border-slate-200 bg-white">
+      <div className="p-3 border-t border-slate-700 bg-slate-800/50">
         <div className="flex space-x-2">
           <Input
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Type a message..."
-            className="flex-1 text-sm"
+            className="flex-1 text-sm bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
           />
           <Button 
             size="sm" 

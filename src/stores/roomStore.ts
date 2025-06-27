@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -6,215 +5,103 @@ interface User {
   id: string;
   username: string;
   color: string;
-  cursorPosition?: { line: number; column: number };
-  isActive: boolean;
+  isActive?: boolean;
+  cursorPosition?: { line: number; column: number } | null;
 }
 
 interface Room {
   id: string;
   code: string;
   createdAt: string;
-  participants: User[];
   codeContent: string;
-  language: string;
 }
 
-interface RoomState {
+interface RoomStore {
   currentRoom: Room | null;
   currentUser: User | null;
-  isConnected: boolean;
   participants: User[];
-  setCurrentRoom: (room: Room | null) => void;
-  setCurrentUser: (user: User | null) => void;
-  updateParticipants: (participants: User[]) => void;
-  createRoom: (username: string) => Promise<string>;
-  joinRoom: (roomCode: string, username: string) => Promise<boolean>;
+  createRoom: (username: string) => Promise<void>;
+  joinRoom: (code: string, username: string) => Promise<boolean>;
   leaveRoom: () => void;
   updateCode: (content: string) => void;
 }
 
-// Generate random 6-character room code
-const generateRoomCode = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
+const generateRoomCode = (): string => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let code = '';
   for (let i = 0; i < 6; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+    code += characters.charAt(Math.floor(Math.random() * characters.length));
   }
-  return result;
+  return code;
 };
 
-// Generate random color for user
-const generateUserColor = () => {
-  const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'];
+const generateUserColor = (): string => {
+  const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#6366F1', '#06B6D4', '#A855F7'];
   return colors[Math.floor(Math.random() * colors.length)];
 };
 
-export const useRoomStore = create<RoomState>((set, get) => ({
+export const useRoomStore = create<RoomStore>((set, get) => ({
   currentRoom: null,
   currentUser: null,
-  isConnected: false,
   participants: [],
-
-  setCurrentRoom: (room) => set({ currentRoom: room }),
-  setCurrentUser: (user) => set({ currentUser: user }),
-  updateParticipants: (participants) => set({ participants }),
 
   createRoom: async (username: string) => {
     const roomCode = generateRoomCode();
-    const user: User = {
-      id: crypto.randomUUID(),
-      username,
-      color: generateUserColor(),
-      isActive: true,
-    };
+    const userColor = generateUserColor();
+    const userId = Math.random().toString(36).substring(2, 15);
 
-    const room: Room = {
-      id: crypto.randomUUID(),
+    const newRoom = {
+      id: Math.random().toString(36).substring(2, 15),
       code: roomCode,
       createdAt: new Date().toISOString(),
-      participants: [user],
-      codeContent: `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link Coding Session</title>
-    <style>
-        body {
-            font-family: 'Inter', system-ui, sans-serif;
-            margin: 0;
-            padding: 2rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 500px;
-        }
-        h1 {
-            color: #1e293b;
-            margin-bottom: 1rem;
-            font-size: 2.5rem;
-        }
-        p {
-            color: #64748b;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-        }
-        button {
-            background: linear-gradient(45deg, #3b82f6, #1e40af);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        button:hover {
-            transform: translateY(-2px);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Welcome to Link!</h1>
-        <p>Start collaborating with your team in real-time.</p>
-        <button onclick="celebrate()">Click me!</button>
-    </div>
-    
-    <script>
-        function celebrate() {
-            const button = event.target;
-            button.textContent = 'Amazing! 🎉';
-            button.style.background = 'linear-gradient(45deg, #10B981, #059669)';
-            
-            setTimeout(() => {
-                button.textContent = 'Click me!';
-                button.style.background = 'linear-gradient(45deg, #3b82f6, #1e40af)';
-            }, 2000);
-        }
-    </script>
-</body>
-</html>`,
-      language: 'html',
+      codeContent: '<!DOCTYPE html>\n<html>\n<head>\n<title>Link</title>\n<style>\nbody {\n  font-family: sans-serif;\n  margin: 0;\n}\n\n.container {\n  padding: 20px;\n}\n</style>\n</head>\n<body>\n  <div class="container">\n    <h1>Hello, world!</h1>\n    <p>Edit this code and see the changes live.</p>\n  </div>\n</body>\n</html>'
     };
 
-    set({ currentRoom: room, currentUser: user, participants: [user], isConnected: true });
-    
-    // Subscribe to room channel for real-time updates
-    const channel = supabase.channel(`room:${roomCode}`)
-      .on('presence', { event: 'sync' }, () => {
-        const newState = channel.presenceState();
-        const participants = Object.values(newState).flat() as User[];
-        get().updateParticipants(participants);
-      })
-      .on('presence', { event: 'join' }, ({ newPresences }) => {
-        console.log('User joined:', newPresences);
-      })
-      .on('presence', { event: 'leave' }, ({ leftPresences }) => {
-        console.log('User left:', leftPresences);
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          await channel.track(user);
-        }
-      });
+    const newUser = {
+      id: userId,
+      username: username,
+      color: userColor,
+    };
 
-    return roomCode;
+    set({ currentRoom: newRoom, currentUser: newUser, participants: [newUser] });
+
+    // Initialize Supabase channel for real-time updates
+    setupRoomSubscription(roomCode, set);
   },
 
-  joinRoom: async (roomCode: string, username: string) => {
-    const user: User = {
-      id: crypto.randomUUID(),
-      username,
-      color: generateUserColor(),
-      isActive: true,
-    };
+  joinRoom: async (code: string, username: string) => {
+    const userColor = generateUserColor();
+    const userId = Math.random().toString(36).substring(2, 15);
 
-    // In a real implementation, you'd fetch room data from your backend
-    // For MVP, we'll create a mock room
-    const room: Room = {
-      id: crypto.randomUUID(),
-      code: roomCode,
+    // Fetch the room from Supabase (replace with your actual Supabase fetch logic)
+    const { data: roomData, error: roomError } = await supabase
+      .from('rooms')
+      .select('*')
+      .eq('code', code)
+      .single();
+
+    if (roomError) {
+      console.error('Failed to fetch room:', roomError);
+      return false;
+    }
+
+    const existingRoom = {
+      id: Math.random().toString(36).substring(2, 15),
+      code: code,
       createdAt: new Date().toISOString(),
-      participants: [user],
-      codeContent: get().currentRoom?.codeContent || `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link Coding Session</title>
-</head>
-<body>
-    <h1>Welcome to Room ${roomCode}!</h1>
-    <p>Start coding together...</p>
-</body>
-</html>`,
-      language: 'html',
+      codeContent: '<!DOCTYPE html>\n<html>\n<head>\n<title>Link</title>\n<style>\nbody {\n  font-family: sans-serif;\n  margin: 0;\n}\n\n.container {\n  padding: 20px;\n}\n</style>\n</head>\n<body>\n  <div class="container">\n    <h1>Hello, world!</h1>\n    <p>Edit this code and see the changes live.</p>\n  </div>\n</body>\n</html>'
     };
 
-    set({ currentRoom: room, currentUser: user, participants: [user], isConnected: true });
+    const newUser = {
+      id: userId,
+      username: username,
+      color: userColor,
+    };
 
-    // Subscribe to room channel
-    const channel = supabase.channel(`room:${roomCode}`)
-      .on('presence', { event: 'sync' }, () => {
-        const newState = channel.presenceState();
-        const participants = Object.values(newState).flat() as User[];
-        get().updateParticipants(participants);
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          await channel.track(user);
-        }
-      });
+    set({ currentRoom: existingRoom, currentUser: newUser, participants: [...get().participants, newUser] });
+
+    // Initialize Supabase channel for real-time updates
+    setupRoomSubscription(code, set);
 
     return true;
   },
@@ -222,9 +109,11 @@ export const useRoomStore = create<RoomState>((set, get) => ({
   leaveRoom: () => {
     const { currentRoom } = get();
     if (currentRoom) {
-      supabase.removeChannel(supabase.channel(`room:${currentRoom.code}`));
+      const channel = supabase.channel(`room:${currentRoom.code}`);
+      channel.untrack();
+      supabase.removeChannel(channel);
     }
-    set({ currentRoom: null, currentUser: null, participants: [], isConnected: false });
+    set({ currentRoom: null, currentUser: null, participants: [] });
   },
 
   updateCode: (content: string) => {
@@ -232,13 +121,47 @@ export const useRoomStore = create<RoomState>((set, get) => ({
     if (currentRoom) {
       set({ currentRoom: { ...currentRoom, codeContent: content } });
       
-      // Broadcast code changes to other participants
       const channel = supabase.channel(`room:${currentRoom.code}`);
       channel.send({
         type: 'broadcast',
         event: 'code_change',
-        payload: { content, timestamp: Date.now() }
+        payload: { content }
       });
     }
   },
 }));
+
+// Helper function to setup room subscription
+const setupRoomSubscription = (roomCode: string, set: any) => {
+  const channel = supabase.channel(`room:${roomCode}`)
+    .on('broadcast', { event: 'code_change' }, (payload) => {
+      console.log('Code change received:', payload);
+      set((state: any) => ({
+        currentRoom: state.currentRoom ? {
+          ...state.currentRoom,
+          codeContent: payload.payload.content
+        } : null
+      }));
+    })
+    .on('presence', { event: 'sync' }, () => {
+      console.log('Presence sync');
+      const presenceState = channel.presenceState();
+      const users = Object.values(presenceState).flat().map((presence: any) => ({
+        id: presence.user_id,
+        username: presence.username,
+        color: presence.color,
+        isActive: true,
+        cursorPosition: 0
+      }));
+      set({ participants: users });
+    })
+    .on('presence', { event: 'join' }, ({ newPresences }) => {
+      console.log('User joined:', newPresences);
+    })
+    .on('presence', { event: 'leave' }, ({ leftPresences }) => {
+      console.log('User left:', leftPresences);
+    })
+    .subscribe();
+
+  return channel;
+};
